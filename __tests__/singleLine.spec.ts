@@ -42,6 +42,7 @@ describe('SingleLine output test', () => {
 		expect(singleLineAllShow.render()).toBe(
 			`singleLine | ${'░'.repeat(50)} | 0/100 Chunks | 0.00% Percent`
 		)
+		singleLineAllShow.stop()
 
 		const singleLineNoInfo = new SingleLine({
 			showPercent: false,
@@ -50,6 +51,7 @@ describe('SingleLine output test', () => {
 
 		singleLineNoInfo.start(100)
 		expect(singleLineNoInfo.render()).toBe(`${'░'.repeat(50)}`)
+		singleLineNoInfo.stop()
 	})
 
 	it('More tasks completed than all tasks.', () => {
