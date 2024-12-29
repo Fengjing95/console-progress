@@ -78,8 +78,8 @@ export class SingleLine extends BaseLine {
 	render() {
 		let str = this.lineOption.name ? `${this.lineOption.name} | ` : ''
 		str += this.progressRender()
-		str += this.lineOption.showTask ? ` | ${this.finishedTask}/${this.allTask}` : ''
-		str += this.lineOption.showPercent ? ` | ${(this.percent * 100).toFixed(2)}%` : ''
+		str += this.lineOption.showTask ? ` | ${this.finishedTask}/${this.allTask} Chunks` : ''
+		str += this.lineOption.showPercent ? ` | ${(this.percent * 100).toFixed(2)}% Percent` : ''
 		return str
 	}
 

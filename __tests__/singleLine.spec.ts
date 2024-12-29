@@ -38,7 +38,9 @@ describe('SingleLine output test', () => {
 		})
 
 		singleLineAllShow.start(100)
-		expect(singleLineAllShow.render()).toBe(`singleLine | ${'░'.repeat(50)} | 0/100 | 0.00%`)
+		expect(singleLineAllShow.render()).toBe(
+			`singleLine | ${'░'.repeat(50)} | 0/100 Chunks | 0.00% Percent`
+		)
 
 		const singleLineNoInfo = new SingleLine({
 			showPercent: false,

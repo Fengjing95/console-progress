@@ -1,0 +1,7 @@
+dist
+*.md
+*.html
+yarn.lock
+lib
+node_modules
+coverage
