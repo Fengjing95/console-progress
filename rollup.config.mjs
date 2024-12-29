@@ -8,7 +8,7 @@ export default {
 			rollupCommonJSResolveHack: false,
 			clean: true
 		}),
-		resolve()
+		resolve({ exportConditions: ['node'] })
 	],
 	output: [
 		{
