@@ -2,7 +2,6 @@ import globals from 'globals'
 import pluginJs from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import prettier from 'eslint-plugin-prettier'
-// import jest from 'eslint-plugin-jest'
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -23,10 +22,4 @@ export default [
 			'no-multiple-empty-lines': ['warn', { max: 1 }]
 		}
 	}
-	// {
-	// 	files: ['tests/**/*'],
-	// 	plugins: {
-	// 		jest: jest
-	// 	}
-	// }
 ]

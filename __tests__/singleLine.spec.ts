@@ -1,5 +1,6 @@
 import { SingleLine } from '../src'
 import chalk from 'chalk'
+import { expect, it, describe } from 'vitest'
 
 describe('SingleLine output test', () => {
 	it('BaseLine output', () => {
