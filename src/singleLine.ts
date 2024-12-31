@@ -2,12 +2,14 @@ import { BaseLine, ProgressOption } from './baseLine'
 import ansiEscapes from 'ansi-escapes'
 import * as process from 'node:process'
 import { EOL } from 'node:os'
+import { cleanObject, formatStringTemplate } from './utils'
 
 export interface LineOption extends ProgressOption {
 	name?: string
 	showPercent?: boolean
 	showTask?: boolean
 	hideCursor?: boolean
+	format?: string
 }
 
 const defaultLineOption: LineOption = {
@@ -76,10 +78,26 @@ export class SingleLine extends BaseLine {
 	 * 渲染d单行进度条
 	 */
 	render() {
-		let str = this.lineOption.name ? `${this.lineOption.name} | ` : ''
-		str += this.progressRender()
-		str += this.lineOption.showTask ? ` | ${this.finishedTask}/${this.allTask} Chunks` : ''
-		str += this.lineOption.showPercent ? ` | ${(this.percent * 100).toFixed(2)}% Percent` : ''
+		let str = ''
+		const dataRecord = {
+			name: this.lineOption.name as string,
+			bar: this.progressRender(),
+			percent: (this.percent * 100).toFixed(2),
+			finish: this.finishedTask,
+			total: this.allTask
+		}
+		cleanObject(dataRecord)
+
+		if (this.lineOption.format) {
+			// 使用声明的格式化输出
+			str = formatStringTemplate(this.lineOption.format, dataRecord)
+		} else {
+			// 默认的输出格式
+			str += this.lineOption.name ? `${dataRecord.name} | ` : ''
+			str += this.progressRender()
+			str += this.lineOption.showTask ? ` | ${dataRecord.finish}/${dataRecord.total} Chunks` : ''
+			str += this.lineOption.showPercent ? ` | ${dataRecord.percent}% Percent` : ''
+		}
 		return str
 	}
 

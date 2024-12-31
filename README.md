@@ -11,6 +11,12 @@ params：
 + showPercent(boolean)：是否显示百分比
 + showTask(boolean)：是否显示任务处理数量
 + hideCursor(boolean)：隐藏终端光标
++ format(string)：进度条格式，会按照字符串模板进行解析，例如`{name} | {bar} | {percent}% Percent | {finish}/{total} Chunks`，支持的变量有
+  + bar：进度条
+  + name：任务标题
+  + percent：百分比
+  + finish：已处理任务数量
+  + total：总任务数量
 
 ```ts
 import { SingleLine } from '@feng-j/console-progress'

@@ -55,6 +55,39 @@ describe('SingleLine output test', () => {
 	})
 
 	it('More tasks completed than all tasks.', () => {
-		expect(() => new SingleLine().start(100).update(101)).toThrow(RangeError)
+		const line = new SingleLine()
+		expect(() => line.start(100).update(101)).toThrow(RangeError)
+		line.stop()
+	})
+
+	it('custom output format without name', () => {
+		const formatLine = new SingleLine({
+			format: '{name} | {bar} | Finished {percent}% | {finish}/{total} Chunks'
+		})
+		formatLine.start(100)
+		expect(formatLine.render()).toBe(`{name} | ${'░'.repeat(50)} | Finished 0.00% | 0/100 Chunks`)
+
+		formatLine.update(50)
+		expect(formatLine.render()).toBe(
+			`{name} | ${chalk.green('█').repeat(25)}${'░'.repeat(25)} | Finished 50.00% | 50/100 Chunks`
+		)
+		formatLine.stop()
+	})
+
+	it('custom output format with name', () => {
+		const formatLine = new SingleLine({
+			name: 'customFormat',
+			format: '{name} | {bar} | {percent}% Percent | {finish}/{total} Chunks'
+		})
+		formatLine.start(200)
+		expect(formatLine.render()).toBe(
+			`customFormat | ${'░'.repeat(50)} | 0.00% Percent | 0/200 Chunks`
+		)
+
+		formatLine.update(100)
+		expect(formatLine.render()).toBe(
+			`customFormat | ${chalk.green('█').repeat(25)}${'░'.repeat(25)} | 50.00% Percent | 100/200 Chunks`
+		)
+		formatLine.stop()
 	})
 })
