@@ -9,3 +9,11 @@ export function cleanObject(obj: Record<string, unknown>) {
 		}
 	}
 }
+
+/**
+ * 判断是否为 HEX 颜色值
+ * @param hex 颜色值
+ */
+export function isHEX(hex: string) {
+	return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(hex)
+}

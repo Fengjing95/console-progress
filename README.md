@@ -11,10 +11,12 @@
 
 ### usage
 
-params：
+params(均为可选参数)：
 + name(string)：任务标题
 + leftChar(string)：进度条左侧已完成部分字符
 + rightChar(string)：进度条右侧未完成部分字符
++ leftColor：已完成部分进度条颜色（HEX颜色）
++ rightColor：未完成部分进度条颜色（HEX颜色）
 + showPercent(boolean)：是否显示百分比
 + showTask(boolean)：是否显示任务处理数量
 + hideCursor(boolean)：隐藏终端光标
@@ -34,3 +36,13 @@ line.update(100)
 ```
 使用效果
 ![result](/static/img.png)
+
+> 文本内容没有自定义颜色配置，如果需要自定义颜色，可以通过format模板配合chalk自行控制，例如
+> ```ts
+> {
+>   format: `${chalk.red('{name}')} | {bar} | ${chalk.yellow('{percent}% Percent')} | ${chalk.green('{finish}/{total} Chunks')}`
+> }
+> ```
+> 效果如下
+> ![result](/static/colorFormat.png)
+> 

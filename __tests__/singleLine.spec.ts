@@ -90,4 +90,26 @@ describe('SingleLine output test', () => {
 		)
 		formatLine.stop()
 	})
+
+	it("custom char's color", () => {
+		const colorLine = new SingleLine({
+			leftChar: '+',
+			leftColor: '#ff0000',
+			rightChar: '-',
+			rightColor: '#00ff00'
+		})
+
+		colorLine.start(100)
+		expect(colorLine.progressRender()).toBe(chalk.red('-').repeat(50))
+
+		colorLine.update(50)
+		expect(colorLine.progressRender()).toBe(chalk.red('+').repeat(25) + chalk.green('-').repeat(25))
+		colorLine.stop()
+	})
+
+	it("custom char's color error", () => {
+		expect(() => new SingleLine({ leftColor: '#ff00000' })).toThrow(TypeError)
+		expect(() => new SingleLine({ leftColor: '#ff000' })).toThrow(TypeError)
+		expect(() => new SingleLine({ leftColor: '#ff000g' })).toThrow(TypeError)
+	})
 })
