@@ -1,6 +1,13 @@
 ## console-progress
 
+![last update](https://img.shields.io/npm/last-update/%40feng-j%2Fconsole-progress)
+![last commit](https://img.shields.io/github/last-commit/Fengjing95/console-progress)
+
 可以在 NodeJS 程序中展示进度条，用于任务处理进度的可视化反馈。
+
+### 活动
+
+![Alt](https://repobeats.axiom.co/api/embed/2f27f02c439973bb5278ae57da1b2815e07dbec4.svg "Repobeats analytics image")
 
 ### usage
 
