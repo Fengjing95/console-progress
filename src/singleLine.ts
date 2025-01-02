@@ -1,26 +1,20 @@
-import { BaseLine, ProgressOption } from './baseLine'
+import { BaseLine, PayloadType, ProgressOption } from './baseLine'
 import ansiEscapes from 'ansi-escapes'
 import * as process from 'node:process'
 import { EOL } from 'node:os'
-import { cleanObject, formatStringTemplate } from './utils'
 
 export interface LineOption extends ProgressOption {
-	name?: string
-	format?: string
-	showPercent?: boolean
-	showTask?: boolean
-	hideCursor?: boolean
+	hideCursor?: boolean // 隐藏光标
+	log?: boolean // 输出到控制台
 }
 
 const defaultLineOption: LineOption = {
-	showPercent: true,
-	showTask: true,
-	hideCursor: true
+	hideCursor: true,
+	log: true
 }
 
 export class SingleLine extends BaseLine {
-	protected readonly lineOption: LineOption
-	write = process.stdout.write.bind(process.stdout)
+	private readonly lineOption: LineOption
 
 	constructor(option?: LineOption) {
 		super(option)
@@ -30,22 +24,39 @@ export class SingleLine extends BaseLine {
 		}
 	}
 
+	private write(...chunks: Parameters<typeof process.stdout.write>) {
+		if (!this.lineOption.log) {
+			return
+		}
+		process.stdout.write.call(process.stdout, ...chunks)
+	}
+
+	/**
+	 * 输出进度条
+	 * @protected
+	 */
+	protected log() {
+		this.write(ansiEscapes.cursorRestorePosition)
+		this.write(this.render())
+	}
+
 	/**
 	 * 初始化进度条任务数量
 	 * @param total 全部的任务数量
 	 * @param current 开始时的任务数量，默认为 0
 	 * @param data 渲染进度条时需要渲染的数据
 	 */
-	start(total: number, current: number = 0, data?: Record<string, string | number>) {
+	start(total: number, current: number = 0, data?: PayloadType) {
+		// 光标控制
 		if (this.lineOption.hideCursor) {
 			this.write(ansiEscapes.cursorHide)
 		}
 		this.write(ansiEscapes.cursorSavePosition)
 
-		this.allTask = total
-		this.update(current, data)
-
-		return this
+		// 更新状态
+		super.start(total, current, data)
+		// 打印
+		this.log()
 	}
 
 	/**
@@ -53,14 +64,15 @@ export class SingleLine extends BaseLine {
 	 * @param current 已完成任务数量
 	 * @param data 渲染进度条时需要渲染的数据
 	 */
-	update(current: number, data?: Record<string, string | number>) {
-		super.update(current)
-		this.log(data)
+	update(current: number, data?: PayloadType) {
+		// 更新状态
+		super.update(current, data)
+		// 打印
+		this.log()
 
 		if (current === this.allTask) {
 			// 完成
 			this.stop()
-			return
 		}
 	}
 
@@ -69,7 +81,7 @@ export class SingleLine extends BaseLine {
 	 * @param step 步进数量
 	 * @param data 渲染进度条需要的额外数量
 	 */
-	increment(step = 1, data?: Record<string, string | number>) {
+	increment(step = 1, data?: PayloadType) {
 		this.update(this.finishedTask + step, data)
 	}
 
@@ -79,43 +91,5 @@ export class SingleLine extends BaseLine {
 	stop() {
 		this.write(ansiEscapes.cursorShow)
 		this.write(EOL)
-	}
-
-	/**
-	 * 渲染d单行进度条
-	 */
-	render(data?: Record<string, string | number>) {
-		let str = ''
-		const dataRecord = {
-			name: this.lineOption.name as string,
-			bar: this.progressRender(),
-			percent: (this.percent * 100).toFixed(2),
-			finish: this.finishedTask,
-			total: this.allTask,
-			...data
-		}
-		cleanObject(dataRecord)
-
-		if (this.lineOption.format) {
-			// 使用声明的格式化输出
-			str = formatStringTemplate(this.lineOption.format, dataRecord)
-		} else {
-			// 默认的输出格式
-			str += this.lineOption.name ? `${dataRecord.name} | ` : ''
-			str += this.progressRender()
-			str += this.lineOption.showTask ? ` | ${dataRecord.finish}/${dataRecord.total} Chunks` : ''
-			str += this.lineOption.showPercent ? ` | ${dataRecord.percent}% Percent` : ''
-		}
-		return str
-	}
-
-	/**
-	 * 输出进度条
-	 * @param data 渲染进度条需要的额外数据
-	 * @protected
-	 */
-	protected log(data?: Record<string, string | number>) {
-		this.write(ansiEscapes.cursorRestorePosition)
-		this.write(this.render(data))
 	}
 }

@@ -42,14 +42,27 @@
 按照step推进任务进度，`(step: number = 1, formatData?: Record<string, string | number>)`
 
 ```ts
-import { SingleLine } from '@feng-j/console-progress'
+const singleLine = new SingleLine({
+  name: 'Test',
+  leftColor: '#39c5bb',
+  format: `${chalk.red('{name}')} | {bar} | ${chalk.yellow('{percent}% Percent')} | ${chalk.green('{finish}/{total} Chunks')}`
+})
+singleLine.start(100, 0)
 
-const line = new SingleLine({ name: 'download book' })
-line.start(100, 0)
-line.update(50)
+setTimeout(() => {
+  singleLine.update(30)
+
+  const timer = setInterval(() => {
+    singleLine.increment()
+    if (singleLine.isFinished()) {
+      clearInterval(timer)
+    }
+  }, 100)
+}, 1000)
+
 ```
 使用效果
-![result](/static/img.png)
+![result](/static/colorFormat.png)
 
 > 文本内容没有自定义颜色配置，如果需要自定义颜色，可以通过format模板配合chalk自行控制，例如
 > ```ts
@@ -57,6 +70,4 @@ line.update(50)
 >   format: `${chalk.red('{name}')} | {bar} | ${chalk.yellow('{percent}% Percent')} | ${chalk.green('{finish}/{total} Chunks')}`
 > }
 > ```
-> 效果如下
-> ![result](/static/colorFormat.png)
 > 

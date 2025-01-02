@@ -4,14 +4,18 @@ import { expect, it, describe } from 'vitest'
 
 describe('SingleLine output test', () => {
 	it('BaseLine output', () => {
-		const singleLine = new SingleLine()
+		const singleLine = new SingleLine({
+			log: false
+		})
 		singleLine.start(100)
-		expect(singleLine.progressRender()).toBe(''.padEnd(50, '░'))
+		expect(singleLine.render()).toBe(`${'░'.repeat(50)} | 0.00% Percent | 0/100 Chunks`)
 		expect(singleLine.getAllTaskCount()).toBe(100)
 		expect(singleLine.getFinishedTaskCount()).toBe(0)
 
 		singleLine.update(50)
-		expect(singleLine.progressRender()).toBe(''.padEnd(25, '█').padEnd(50, '░'))
+		expect(singleLine.render()).toBe(
+			`${chalk.green('█').repeat(25)}${'░'.repeat(25)} | 50.00% Percent | 50/100 Chunks`
+		)
 		expect(singleLine.getAllTaskCount()).toBe(100)
 		expect(singleLine.getFinishedTaskCount()).toBe(50)
 
@@ -24,45 +28,30 @@ describe('SingleLine output test', () => {
 	it('BaseLine output with custom char', () => {
 		const singleLine = new SingleLine({
 			leftChar: '+',
-			rightChar: '-'
+			rightChar: '-',
+			log: false
 		})
 
 		singleLine.start(100)
-		expect(singleLine.progressRender()).toBe('-'.repeat(50))
+		expect(singleLine.render()).toBe(`${'-'.repeat(50)} | 0.00% Percent | 0/100 Chunks`)
 
 		singleLine.update(50)
-		expect(singleLine.progressRender()).toBe(chalk.green('+').repeat(25) + '-'.repeat(25))
+		expect(singleLine.render()).toBe(
+			`${chalk.green('+').repeat(25)}${'-'.repeat(25)} | 50.00% Percent | 50/100 Chunks`
+		)
 
 		singleLine.update(100)
-		expect(singleLine.progressRender()).toBe(chalk.green('+').repeat(50))
-	})
-
-	it('SingleLine output with info.', () => {
-		const singleLineAllShow = new SingleLine({
-			name: 'singleLine',
-			showPercent: true,
-			showTask: true
-		})
-
-		singleLineAllShow.start(100)
-		expect(singleLineAllShow.render()).toBe(
-			`singleLine | ${'░'.repeat(50)} | 0/100 Chunks | 0.00% Percent`
+		expect(singleLine.render()).toBe(
+			`${chalk.green('+').repeat(50)} | 100.00% Percent | 100/100 Chunks`
 		)
-		singleLineAllShow.stop()
-
-		const singleLineNoInfo = new SingleLine({
-			showPercent: false,
-			showTask: false
-		})
-
-		singleLineNoInfo.start(100)
-		expect(singleLineNoInfo.render()).toBe(`${'░'.repeat(50)}`)
-		singleLineNoInfo.stop()
 	})
 
 	it('More tasks completed than all tasks.', () => {
-		const line = new SingleLine()
-		expect(() => line.start(100).update(101)).toThrow(RangeError)
+		const line = new SingleLine({
+			log: false
+		})
+		line.start(100)
+		expect(() => line.update(101)).toThrow(RangeError)
 		line.stop()
 	})
 
@@ -71,13 +60,13 @@ describe('SingleLine output test', () => {
 			format: '{name} | {bar} | Finished {percent}% | {finish}/{total} Chunks | {foo}'
 		})
 		formatLine.start(100, 0, { foo: 'bar' })
-		expect(formatLine.render({ foo: 'bar' })).toBe(
+		expect(formatLine.render()).toBe(
 			`{name} | ${'░'.repeat(50)} | Finished 0.00% | 0/100 Chunks | bar`
 		)
 
-		formatLine.update(50, { foo: 'bar' })
-		expect(formatLine.render({ foo: 'bar' })).toBe(
-			`{name} | ${chalk.green('█').repeat(25)}${'░'.repeat(25)} | Finished 50.00% | 50/100 Chunks | bar`
+		formatLine.update(50, { foo: 'baz' })
+		expect(formatLine.render()).toBe(
+			`{name} | ${chalk.green('█').repeat(25)}${'░'.repeat(25)} | Finished 50.00% | 50/100 Chunks | baz`
 		)
 		formatLine.stop()
 	})
@@ -85,12 +74,15 @@ describe('SingleLine output test', () => {
 	it('custom output format with name', () => {
 		const formatLine = new SingleLine({
 			name: 'customFormat',
-			format: '{name} | {bar} | {percent}% Percent | {finish}/{total} Chunks'
+			format: '{name} | {bar} | {percent}% Percent | {finish}/{total} Chunks',
+			log: false
 		})
 		formatLine.start(200)
 		expect(formatLine.render()).toBe(
 			`customFormat | ${'░'.repeat(50)} | 0.00% Percent | 0/200 Chunks`
 		)
+
+		expect(formatLine.name).toBe('customFormat')
 
 		formatLine.update(100)
 		expect(formatLine.render()).toBe(
@@ -104,14 +96,18 @@ describe('SingleLine output test', () => {
 			leftChar: '+',
 			leftColor: '#ff0000',
 			rightChar: '-',
-			rightColor: '#00ff00'
+			rightColor: '#00ff00',
+			log: false
 		})
 
 		colorLine.start(100)
-		expect(colorLine.progressRender()).toBe(chalk.red('-').repeat(50))
+		expect(colorLine.render()).toBe(`${chalk.green('-').repeat(50)} | 0.00% Percent | 0/100 Chunks`)
 
 		colorLine.update(50)
-		expect(colorLine.progressRender()).toBe(chalk.red('+').repeat(25) + chalk.green('-').repeat(25))
+		expect(colorLine.render()).toBe(
+			`${chalk.red('+').repeat(25)}${chalk.green('-').repeat(25)} | 50.00% Percent | 50/100 Chunks`
+		)
+
 		colorLine.stop()
 	})
 
@@ -122,13 +118,15 @@ describe('SingleLine output test', () => {
 	})
 
 	it('increment', () => {
-		const incrementLine = new SingleLine()
+		const incrementLine = new SingleLine({ log: false })
 
 		incrementLine.start(100)
-		expect(incrementLine.progressRender()).toBe('░'.repeat(50))
+		expect(incrementLine.render()).toBe(`${'░'.repeat(50)} | 0.00% Percent | 0/100 Chunks`)
 
 		incrementLine.increment(2)
 		expect(incrementLine.getFinishedTaskCount()).toBe(2)
-		expect(incrementLine.progressRender()).toBe(chalk.green('█') + '░'.repeat(49))
+		expect(incrementLine.render()).toBe(
+			`${chalk.green('█').repeat(1)}${'░'.repeat(49)} | 2.00% Percent | 2/100 Chunks`
+		)
 	})
 })
