@@ -44,10 +44,39 @@ export class BaseLine {
 	}
 
 	/**
+	 * 更新数据
+	 * @param finishedTask 已完成的任务数量
+	 * @protected
+	 */
+	protected update(finishedTask: number) {
+		if (finishedTask > this.allTask) {
+			// 超出最大值
+			throw new RangeError("finished task's count should not be smaller than total")
+		}
+
+		this.finishedTask = finishedTask
+		this.percent = this.finishedTask / this.allTask
+	}
+
+	/**
 	 * 任务是否已完成
 	 */
-	get isFinished() {
+	isFinished() {
 		return this.finishedTask === this.allTask
+	}
+
+	/**
+	 * 获取已完成数量
+	 */
+	getFinishedTaskCount() {
+		return this.finishedTask
+	}
+
+	/**
+	 * 获取全部任务数量
+	 */
+	getAllTaskCount() {
+		return this.allTask
 	}
 
 	/**

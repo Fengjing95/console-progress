@@ -11,7 +11,9 @@
 
 ### usage
 
-params(均为可选参数)：
+#### constructor
+
+构造函数(均为可选参数)：
 + name(string)：任务标题
 + leftChar(string)：进度条左侧已完成部分字符
 + rightChar(string)：进度条右侧未完成部分字符
@@ -20,19 +22,31 @@ params(均为可选参数)：
 + showPercent(boolean)：是否显示百分比
 + showTask(boolean)：是否显示任务处理数量
 + hideCursor(boolean)：隐藏终端光标
-+ format(string)：进度条格式，会按照字符串模板进行解析，例如`{name} | {bar} | {percent}% Percent | {finish}/{total} Chunks`，支持的变量有
++ format(string)：进度条格式，会按照字符串模板进行解析，例如`{name} | {bar} | {percent}% Percent | {finish}/{total} Chunks`，内置的变量有
   + bar：进度条
   + name：任务标题
   + percent：百分比
   + finish：已处理任务数量
   + total：总任务数量
 
+#### start
+
+开始任务，用于设置总任务数量，`(allTask: number, finish: number = 0, formatData?: Record<string, string | number>)`
+
+#### update
+
+更新任务进度，`(finish: number, formatData?: Record<string, string | number>)`
+
+#### increment
+
+按照step推进任务进度，`(step: number = 1, formatData?: Record<string, string | number>)`
+
 ```ts
 import { SingleLine } from '@feng-j/console-progress'
 
 const line = new SingleLine({ name: 'download book' })
 line.start(100, 0)
-line.update(100)
+line.update(50)
 ```
 使用效果
 ![result](/static/img.png)
