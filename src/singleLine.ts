@@ -22,6 +22,11 @@ export class SingleLine extends BaseLine {
 			...defaultLineOption,
 			...option
 		}
+		// 光标控制
+		if (this.lineOption.hideCursor) {
+			this.write(ansiEscapes.cursorHide)
+		}
+		this.write(ansiEscapes.cursorSavePosition)
 	}
 
 	private write(...chunks: Parameters<typeof process.stdout.write>) {
@@ -82,7 +87,8 @@ export class SingleLine extends BaseLine {
 	 * @param data 渲染进度条需要的额外数量
 	 */
 	increment(step = 1, data?: PayloadType) {
-		this.update(this.finishedTask + step, data)
+		super.increment(step, data)
+		this.log()
 	}
 
 	/**

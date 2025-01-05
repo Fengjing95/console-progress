@@ -9,7 +9,7 @@
 
 ![Alt](https://repobeats.axiom.co/api/embed/2f27f02c439973bb5278ae57da1b2815e07dbec4.svg "Repobeats analytics image")
 
-### usage
+### SingleLine
 
 #### constructor
 
@@ -70,4 +70,33 @@ setTimeout(() => {
 >   format: `${chalk.red('{name}')} | {bar} | ${chalk.yellow('{percent}% Percent')} | ${chalk.green('{finish}/{total} Chunks')}`
 > }
 > ```
-> 
+>
+
+### MultiLine
+
+同SingleLine构造函数所需参数，会在创建line的时候作为默认参数，也可以创建line的时候手动指定
+
+MultiLine.create，用于创建一行子line`(total: number, finish: number = 0, option?: ConstructorParameters<SingleLine>, formatData?: Record<string, string | number>)`，
+后续可以调用子line的update`(finish: number, formatData?: Record<string, string | number>)`方法更新，
+或者是用multiLine的update`(index: number, finish: number, formatData?: Record<string, string | number>)`进行更新
+
+```ts
+const multiLine = new MultiLine()
+const line1 = multiLine.create(100, 0, { name: 'line1' })
+const line2 = multiLine.create(100, 0, { name: 'line2' })
+
+const timer = setInterval(() => {
+  const index = Math.floor(Math.random() * 2)
+  const line = index === 0 ? line1 : line2
+  if (line.isFinished()) {
+    return
+  }
+
+  line.increment(5)
+
+  if (line1.isFinished() && line2.isFinished()) {
+    clearInterval(timer)
+  }
+}, 50)
+
+```

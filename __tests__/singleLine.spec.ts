@@ -51,6 +51,8 @@ describe('SingleLine output test', () => {
 			log: false
 		})
 		line.start(100)
+		line.update(90)
+		expect(() => line.update(50)).toThrow(RangeError)
 		expect(() => line.update(101)).toThrow(RangeError)
 		line.stop()
 	})

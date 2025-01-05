@@ -76,7 +76,7 @@ export class BaseLine {
 	 * @param data 自定义渲染数据
 	 * @protected
 	 */
-	protected start(total: number, current = 0, data?: PayloadType) {
+	start(total: number, current = 0, data?: PayloadType) {
 		this.allTask = total
 		this.update(current, data)
 	}
@@ -87,15 +87,29 @@ export class BaseLine {
 	 * @param data 自定义渲染数据
 	 * @protected
 	 */
-	protected update(finishedTask: number, data?: PayloadType) {
+	update(finishedTask: number, data?: PayloadType) {
 		if (finishedTask > this.allTask) {
 			// 超出最大值
 			throw new RangeError("finished task's count should not be smaller than total")
 		}
 
+		if (finishedTask < this.finishedTask) {
+			// 进度倒退
+			throw new RangeError("finished task's count should not be smaller than current")
+		}
+
 		this.finishedTask = finishedTask
 		this.percent = this.finishedTask / this.allTask
 		this.payload = data || {}
+	}
+
+	/**
+	 * 步进任务数量
+	 * @param step 步进数量
+	 * @param data 渲染进度条需要的额外数量
+	 */
+	increment(step = 1, data?: PayloadType) {
+		this.update(this.finishedTask + step, data)
 	}
 
 	/**

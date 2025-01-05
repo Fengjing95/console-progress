@@ -16,5 +16,5 @@ setTimeout(() => {
 		if (singleLine.isFinished()) {
 			clearInterval(timer)
 		}
-	}, 100)
+	}, 50)
 }, 1000)
